@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const User = require('./User');
+const User = require('./user');
 
 const Transaction = sequelize.define('Transaction', {
   id: {
@@ -11,7 +11,7 @@ const Transaction = sequelize.define('Transaction', {
   user_id: {
     type: DataTypes.INTEGER,
     references: {
-      model: User,
+      model: user,
       key: 'id'
     }
   },
@@ -60,7 +60,7 @@ const Transaction = sequelize.define('Transaction', {
   timestamps: true
 });
 
-Transaction.belongsTo(User, { foreignKey: 'user_id' });
-User.hasMany(Transaction, { foreignKey: 'user_id' });
+Transaction.belongsTo(user, { foreignKey: 'user_id' });
+user.hasMany(Transaction, { foreignKey: 'user_id' });
 
 module.exports = Transaction;
