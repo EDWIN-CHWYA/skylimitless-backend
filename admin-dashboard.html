@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKYLIMITLESS - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(135deg, #00838f, #006064);
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 12px 15px;
+            display: block;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .sidebar i {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #00838f;
+        }
+
+        .table-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f5f5f5;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .status-completed, .status-active {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .status-pending {
+            background: #ff9800;
+            color: white;
+        }
+
+        .status-blocked, .status-failed {
+            background: #f44336;
+            color: white;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .block-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .unblock-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .extend-btn {
+            background: #2196F3;
+            color: white;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .login-container h2 {
+            text-align: center;
+            color: #00838f;
+            margin-bottom: 20px;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            background: #00838f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .login-container button:disabled {
+            background: #9e9e9e;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: #f44336;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .warning-message {
+            color: #ff9800;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .countdown-timer {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #f44336;
+            background: #ffebee;
+            padding: 8px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .confirm-btn {
+            background: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .cancel-modal-btn {
+            background: #9e9e9e;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+
+        /* Filter bar styles */
+        .filter-bar {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-bar select, .filter-bar input {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        
+        .filter-btn {
+            background: #00838f;
+            color: white;
+            padding: 8px 15px;
+        }
+        
+        .clear-btn {
+            background: #666;
+            color: white;
+            padding: 8px 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <h2>SKYLIMITLESS Admin</h2>
+        <div id="loginError" class="error-message"></div>
+        <div id="warningMessage" class="warning-message" style="display: none;"></div>
+        <input type="text" id="username" placeholder="Phone Number">
+        <input type="password" id="password" placeholder="Password">
+        <button id="loginBtn" onclick="login()">Login</button>
+        <div id="countdownTimer" class="countdown-timer"></div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboardPage" class="container" style="display: none;">
+        <div class="sidebar">
+            <h2>SKYLIMITLESS</h2>
+            <ul>
+                <li><a onclick="showSection('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a onclick="showSection('users')"><i class="fas fa-users"></i> Users</a></li>
+                <li><a onclick="showSection('transactions')"><i class="fas fa-history"></i> Transactions</a></li>
+                <li><a onclick="showSection('sessions')"><i class="fas fa-wifi"></i> Active Sessions</a></li>
+                <li><a onclick="showSection('logs')"><i class="fas fa-history"></i> System Logs</a></li>
+                <li><a onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1 id="pageTitle">Dashboard</h1>
+                <span id="lastUpdate"></span>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div id="dashboardSection" class="section active">
+                <div class="stats-grid">
+                    <div class="stat-card"><h3>Total Users</h3><div class="value" id="totalUsers">-</div></div>
+                    <div class="stat-card"><h3>Active Sessions</h3><div class="value" id="activeSessions">-</div></div>
+                    <div class="stat-card"><h3>Today's Transactions</h3><div class="value" id="todayTransactions">-</div></div>
+                    <div class="stat-card"><h3>Month Revenue</h3><div class="value" id="monthRevenue">Ksh -</div></div>
+                </div>
+                <div class="table-container">
+                    <h2>Recent Transactions</h2>
+                    <table>
+                        <thead>
+                            <tr><th>Phone</th><th>Package</th><th>Amount</th><th>Status</th><th>Date</th></tr>
+                        </thead>
+                        <tbody id="recentTransactionsBody"><tr><td colspan="5">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Users Section -->
+            <div id="usersSection" class="section">
+                <div class="table-container">
+                    <h2>User Management</h2>
+                    <table>
+                        <thead>
+                            <tr><th>Phone</th><th>Name</th><th>MAC Address</th><th>Status</th><th>Joined</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="usersTableBody"><tr><td colspan="6">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Transactions Section -->
+            <div id="transactionsSection" class="section">
+                <div class="table-container">
+                    <h2>Transaction History</h2>
+                    <table>
+                        <thead>
+                            <tr><th>Phone</th><th>Package</th><th>Amount</th><th>Receipt</th><th>Status</th><th>Date</th></tr>
+                        </thead>
+                        <tbody id="transactionsTableBody"><tr><td colspan="6">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sessions Section -->
+            <div id="sessionsSection" class="section">
+                <div class="table-container">
+                    <h2>Active Sessions</h2>
+                    <table>
+                        <thead>
+                            <tr><th>User</th><th>Start Time</th><th>End Time</th><th>Duration</th><th>Data Used</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="sessionsTableBody"><tr><td colspan="6">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- System Logs Section -->
+            <div id="logsSection" class="section">
+                <div class="table-container">
+                    <h2><i class="fas fa-history"></i> System Logs</h2>
+                    
+                    <!-- Filter Bar -->
+                    <div class="filter-bar">
+                        <select id="logFilterAction">
+                            <option value="">All Actions</option>
+                            <option value="LOGIN">Login</option>
+                            <option value="LOGOUT">Logout</option>
+                            <option value="LOGIN_FAILED">Failed Login</option>
+                            <option value="USER_BLOCKED">User Blocked</option>
+                            <option value="USER_UNBLOCKED">User Unblocked</option>
+                            <option value="SESSION_EXTENDED">Session Extended</option>
+                            <option value="SESSION_TERMINATED">Session Terminated</option>
+                            <option value="USER_UPDATED">User Updated</option>
+                        </select>
+                        
+                        <select id="logFilterStatus">
+                            <option value="">All Status</option>
+                            <option value="success">Success</option>
+                            <option value="failed">Failed</option>
+                            <option value="warning">Warning</option>
+                        </select>
+                        
+                        <input type="date" id="logStartDate" placeholder="Start Date">
+                        <span>to</span>
+                        <input type="date" id="logEndDate" placeholder="End Date">
+                        
+                        <button onclick="loadLogs(1)" class="action-btn filter-btn">Filter</button>
+                        <button onclick="clearLogFilters()" class="action-btn clear-btn">Clear</button>
+                    </div>
+                    
+                    <!-- Logs Table -->
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%;">
+                            <thead>
+                                <tr style="background: #f5f5f5;">
+                                    <th>Time</th>
+                                    <th>Admin</th>
+                                    <th>Action</th>
+                                    <th>Target</th>
+                                    <th>Details</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logsTableBody">
+                                <tr><td colspan="6" style="text-align: center;">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div id="logsPagination" style="margin-top: 20px; text-align: center; display: flex; justify-content: center; gap: 10px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Extend Session Modal -->
+    <div id="extendModal" class="modal">
+        <div class="modal-content">
+            <h3>Extend Session</h3>
+            <select id="extendHours">
+<option value="0.5">+30 Minutes</option>
+                <option value="1">+1 Hour</option>
+                <option value="2">+2 Hours</option>
+                <option value="4">+4 Hours</option>
+                <option value="8">+8 Hours</option>
+                <option value="12">+12 Hours</option>
+                <option value="24">+24 Hours</option>
+                <option value="48">+48 Hours</option>
+                <option value="168">+168 Hours</option>
+            </select>
+            <div class="modal-buttons">
+                <button class="confirm-btn" onclick="confirmExtend()">Extend</button>
+                <button class="cancel-modal-btn" onclick="closeExtendModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== CONFIGURATION ==========
+        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:5000'
+            : `${window.location.protocol}//${window.location.hostname}:5000`;
+        
+        let token = localStorage.getItem('adminToken');
+        let csrfToken = null;
+        let currentExtendSessionId = null;
+        let sessionTimeout = null;
+        let blockCountdownInterval = null;
+        
+        const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+
+        // ========== HELPER FUNCTIONS ==========
+        function escapeHtml(str) {
+            if (!str) return '-';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function resetSessionTimeout() {
+            if (sessionTimeout) clearTimeout(sessionTimeout);
+            sessionTimeout = setTimeout(() => {
+                alert('Your session has expired due to inactivity. Please login again.');
+                logout();
+            }, SESSION_TIMEOUT_MS);
+        }
+
+        // ========== CSRF TOKEN ==========
+        async function fetchCsrfToken() {
+            try {
+                const response = await fetch(`${API_BASE}/api/csrf-token`, { 
+                    method: 'GET', 
+                    credentials: 'include' 
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    csrfToken = data.token;
+                    console.log('✅ CSRF token obtained');
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('Failed to get CSRF token:', error);
+                return false;
+            }
+        }
+
+        // ========== COUNTDOWN FUNCTION ==========
+        function startBlockCountdown(remainingMinutes) {
+            const countdownDiv = document.getElementById('countdownTimer');
+            const loginBtn = document.getElementById('loginBtn');
+            const warningDiv = document.getElementById('warningMessage');
+            
+            let remainingSeconds = remainingMinutes * 60;
+            countdownDiv.style.display = 'block';
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Please wait...';
+            warningDiv.style.display = 'block';
+            warningDiv.innerHTML = '⚠️ Too many failed attempts. Please wait before trying again.';
+            
+            function updateCountdown() {
+                if (remainingSeconds <= 0) {
+                    clearInterval(blockCountdownInterval);
+                    countdownDiv.style.display = 'none';
+                    warningDiv.style.display = 'none';
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Login';
+                    document.getElementById('loginError').textContent = '';
+                    blockCountdownInterval = null;
+                    return;
+                }
+                
+                const minutes = Math.floor(remainingSeconds / 60);
+                const seconds = remainingSeconds % 60;
+                countdownDiv.innerHTML = `⏳ Try again in: ${minutes}m ${seconds}s`;
+                remainingSeconds--;
+            }
+            
+            updateCountdown();
+            blockCountdownInterval = setInterval(updateCountdown, 1000);
+        }
+
+        // ========== LOGIN FUNCTIONS ==========
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const errorDiv = document.getElementById('loginError');
+            const warningDiv = document.getElementById('warningMessage');
+            const countdownDiv = document.getElementById('countdownTimer');
+            
+            if (blockCountdownInterval) {
+                clearInterval(blockCountdownInterval);
+                blockCountdownInterval = null;
+            }
+            
+            if (!username || !password) {
+                errorDiv.textContent = 'Please enter username and password';
+                return;
+            }
+            
+            errorDiv.textContent = '';
+            warningDiv.style.display = 'none';
+            countdownDiv.style.display = 'none';
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/login`, {
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                
+                if (data.blocked === true && data.remainingTime) {
+                    startBlockCountdown(data.remainingTime);
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Login';
+                    return;
+                }
+                
+                if (data.success) {
+                    token = data.token;
+                    localStorage.setItem('adminToken', token);
+                    await fetchCsrfToken();
+                    document.getElementById('loginPage').style.display = 'none';
+                    document.getElementById('dashboardPage').style.display = 'flex';
+                    loadDashboard();
+                    resetSessionTimeout();
+                    
+                    ['click', 'keypress', 'mousemove'].forEach(event => {
+                        document.addEventListener(event, resetSessionTimeout);
+                    });
+                } else {
+                    if (data.attemptsRemaining !== undefined && data.attemptsRemaining > 0) {
+                        errorDiv.textContent = data.message || 'Invalid credentials';
+                        warningDiv.style.display = 'block';
+                        warningDiv.innerHTML = `⚠️ ${data.attemptsRemaining} attempt(s) remaining before temporary block.`;
+                        warningDiv.style.color = '#ff9800';
+                    } else if (data.attemptsRemaining === 0) {
+                        errorDiv.textContent = data.message || 'Invalid credentials';
+                        warningDiv.style.display = 'block';
+                        warningDiv.innerHTML = `⚠️ Last attempt! Next failure will block you for 15 minutes.`;
+                        warningDiv.style.color = '#f44336';
+                    } else {
+                        errorDiv.textContent = data.message || 'Invalid credentials';
+                    }
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Login';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                errorDiv.textContent = 'Connection error. Please try again.';
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+            }
+        }
+
+        // ========== UPDATED: Logout with audit log ==========
+        function logout() {
+            // Send logout audit log before clearing token
+            if (token) {
+                fetch(`${API_BASE}/api/admin/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrfToken || ''
+                    },
+                    keepalive: true
+                }).catch(err => console.error('Logout log error:', err));
+            }
+            
+            localStorage.removeItem('adminToken');
+            if (sessionTimeout) clearTimeout(sessionTimeout);
+            if (blockCountdownInterval) clearInterval(blockCountdownInterval);
+            location.reload();
+        }
+
+        // ========== DASHBOARD FUNCTIONS ==========
+        function showSection(section) {
+            const sections = ['dashboardSection', 'usersSection', 'transactionsSection', 'sessionsSection', 'logsSection'];
+            sections.forEach(sec => {
+                const el = document.getElementById(sec);
+                if (el) el.classList.remove('active');
+            });
+            
+            const selectedSection = document.getElementById(section + 'Section');
+            if (selectedSection) selectedSection.classList.add('active');
+            
+            const titles = { dashboard: 'Dashboard', users: 'Users', transactions: 'Transactions', sessions: 'Active Sessions', logs: 'System Logs' };
+            document.getElementById('pageTitle').innerText = titles[section];
+            
+            if (section === 'dashboard') loadDashboard();
+            if (section === 'users') loadUsers();
+            if (section === 'transactions') loadTransactions();
+            if (section === 'sessions') loadSessions();
+            if (section === 'logs') loadLogs(1);
+            
+            resetSessionTimeout();
+        }
+
+        async function fetchWithAuth(endpoint, options = {}) {
+            const headers = { 
+                'Authorization': `Bearer ${token}`, 
+                'Content-Type': 'application/json' 
+            };
+            if (csrfToken && options.method && options.method !== 'GET') {
+                headers['x-csrf-token'] = csrfToken;
+            }
+            const response = await fetch(`${API_BASE}/api/admin${endpoint}`, { 
+                ...options, 
+                headers, 
+                credentials: 'include' 
+            });
+            if (response.status === 401) { 
+                logout(); 
+                throw new Error('Unauthorized'); 
+            }
+            if (response.status === 403) { 
+                throw new Error('Forbidden'); 
+            }
+            return response.json();
+        }
+
+        async function loadDashboard() {
+            try {
+                const data = await fetchWithAuth('/dashboard/stats');
+                if (data.success && data.stats) {
+                    document.getElementById('totalUsers').innerText = data.stats.totalUsers || 0;
+                    document.getElementById('activeSessions').innerText = data.stats.activeSessions || 0;
+                    document.getElementById('todayTransactions').innerText = data.stats.todayTransactions || 0;
+                    document.getElementById('monthRevenue').innerText = `Ksh ${data.stats.monthRevenue || 0}`;
+                }
+                if (data.recentTransactions && data.recentTransactions.length) {
+                    let html = '';
+                    data.recentTransactions.forEach(t => {
+                        html += `<tr>
+                            <td>${escapeHtml(t.phone)}</td>
+                            <td>${escapeHtml(t.package_name)}</td>
+                            <td>Ksh ${escapeHtml(t.amount)}</td>
+                            <td><span class="status-badge status-${escapeHtml(t.status)}">${escapeHtml(t.status)}</span></td>
+                            <td>${new Date(t.createdAt).toLocaleString()}</td>
+                        </tr>`;
+                    });
+                    document.getElementById('recentTransactionsBody').innerHTML = html;
+                }
+                document.getElementById('lastUpdate').innerText = 'Last updated: ' + new Date().toLocaleTimeString();
+                resetSessionTimeout();
+            } catch (error) { 
+                console.error(error); 
+            }
+        }
+
+        async function loadUsers() {
+            try {
+                const data = await fetchWithAuth('/users?limit=50');
+                if (data.users && data.users.length) {
+                    let html = '';
+                    data.users.forEach(user => {
+                        const isBlocked = user.status === 'blocked';
+                        html += `<tr>
+                            <td>${escapeHtml(user.phone)}</td>
+                            <td>${escapeHtml(user.name)}</td>
+                            <td>${escapeHtml(user.mac_address)}</td>
+                            <td><span class="status-badge ${isBlocked ? 'status-blocked' : 'status-active'}">${escapeHtml(user.status)}</span></td>
+                            <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}</td>
+                            <td><button onclick="toggleUserBlock(${user.id}, ${isBlocked})" class="action-btn ${isBlocked ? 'unblock-btn' : 'block-btn'}">${isBlocked ? 'Unblock' : 'Block'}</button></td>
+                        </tr>`;
+                    });
+                    document.getElementById('usersTableBody').innerHTML = html;
+                }
+                resetSessionTimeout();
+            } catch (error) { 
+                console.error(error); 
+            }
+        }
+
+        async function toggleUserBlock(userId, isBlocked) {
+            const action = isBlocked ? 'UNBLOCK' : 'BLOCK';
+            if (!confirm(`Are you sure you want to ${action} this user?`)) return;
+            
+            try {
+                if (!csrfToken) {
+                    await fetchCsrfToken();
+                }
+                
+                const data = await fetchWithAuth(`/users/${userId}/toggle-block`, { method: 'PATCH' });
+                if (data.success) {
+                    alert(`User ${data.status === 'blocked' ? 'BLOCKED' : 'UNBLOCKED'} successfully`);
+                    loadUsers();
+                } else {
+                    alert('Failed to toggle user block: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Toggle block error:', error);
+                if (error.message === 'Forbidden') {
+                    console.log('CSRF token may be expired, refreshing...');
+                    await fetchCsrfToken();
+                    try {
+                        const retryData = await fetchWithAuth(`/users/${userId}/toggle-block`, { method: 'PATCH' });
+                        if (retryData.success) {
+                            alert(`User ${retryData.status === 'blocked' ? 'BLOCKED' : 'UNBLOCKED'} successfully`);
+                            loadUsers();
+                        } else {
+                            alert('Failed to toggle user block after retry');
+                        }
+                    } catch (retryError) {
+                        alert('Error toggling user block. Please refresh the page and try again.');
+                    }
+                } else {
+                    alert('Error toggling user block. Please try again.');
+                }
+            }
+            resetSessionTimeout();
+        }
+
+        async function loadTransactions() {
+            try {
+                const data = await fetchWithAuth('/transactions?limit=50');
+                if (data.transactions && data.transactions.length) {
+                    let html = '';
+                    data.transactions.forEach(t => {
+                        html += `<tr>
+                            <td>${escapeHtml(t.phone)}</td>
+                            <td>${escapeHtml(t.package_name)}</td>
+                            <td>Ksh ${escapeHtml(t.amount)}</td>
+                            <td>${escapeHtml(t.mpesa_receipt)}</td>
+                            <td><span class="status-badge status-${escapeHtml(t.status)}">${escapeHtml(t.status)}</span></td>
+                            <td>${new Date(t.createdAt).toLocaleString()}</td>
+                        </tr>`;
+                    });
+                    document.getElementById('transactionsTableBody').innerHTML = html;
+                }
+                resetSessionTimeout();
+            } catch (error) { 
+                console.error(error); 
+            }
+        }
+
+        async function loadSessions() {
+            try {
+                const response = await fetch(`${API_BASE}/api/sessions/all-active`, {
+                    headers: { 
+                        'Authorization': `Bearer ${token}`, 
+                        'x-csrf-token': csrfToken || '' 
+                    },
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                if (data.sessions && data.sessions.length) {
+                    let html = '';
+                    data.sessions.forEach(session => {
+                        html += `<tr>
+                            <td>${escapeHtml(session.User ? session.User.phone : 'Unknown')}</td>
+                            <td>${new Date(session.start_time).toLocaleString()}</td>
+                            <td>${new Date(session.end_time).toLocaleString()}</td>
+                            <td>${escapeHtml(session.duration_hours)} hours</td>
+                            <td>${escapeHtml(session.data_used || 0)} MB</td>
+                            <td><button onclick="openExtendModal(${session.id})" class="action-btn extend-btn">Extend</button></td>
+                        </tr>`;
+                    });
+                    document.getElementById('sessionsTableBody').innerHTML = html;
+                } else {
+                    document.getElementById('sessionsTableBody').innerHTML = '<tr><td colspan="6">No active sessions</td></tr>';
+                }
+                resetSessionTimeout();
+            } catch (error) { 
+                console.error('Error loading sessions:', error); 
+            }
+        }
+
+        function openExtendModal(sessionId) { 
+            currentExtendSessionId = sessionId; 
+            document.getElementById('extendModal').style.display = 'flex'; 
+        }
+        
+        function closeExtendModal() { 
+            document.getElementById('extendModal').style.display = 'none'; 
+            currentExtendSessionId = null; 
+        }
+
+        async function confirmExtend() {
+            const hours = parseFloat(document.getElementById('extendHours').value);
+            if (!currentExtendSessionId) { 
+                alert('No session selected'); 
+                return; 
+            }
+            if (!confirm(`Add ${hours} hour(s) to this session?`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/sessions/extend`, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${token}`, 
+                        'Content-Type': 'application/json', 
+                        'x-csrf-token': csrfToken || '' 
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ sessionId: currentExtendSessionId, additionalHours: hours })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert(`Session extended! New end time: ${new Date(data.newEndTime).toLocaleString()}`);
+                    closeExtendModal();
+                    loadSessions();
+                    loadDashboard();
+                } else { 
+                    alert('Failed to extend session: ' + (data.message || 'Unknown error')); 
+                }
+            } catch (error) { 
+console.error('Error extending session:', error);
+                alert('Error extending session'); 
+            }
+            resetSessionTimeout();
+        }
+
+        // ========== SYSTEM LOGS FUNCTIONS ==========
+        let currentLogsPage = 1;
+        
+        async function loadLogs(page = 1) {
+            currentLogsPage = page;
+            
+            const action = document.getElementById('logFilterAction').value;
+            const status = document.getElementById('logFilterStatus').value;
+            const startDate = document.getElementById('logStartDate').value;
+            const endDate = document.getElementById('logEndDate').value;
+            
+            let url = `${API_BASE}/api/admin/logs?page=${page}&limit=50`;
+            if (action) url += `&action=${action}`;
+            if (status) url += `&status=${status}`;
+            if (startDate) url += `&startDate=${startDate}`;
+            if (endDate) url += `&endDate=${endDate}`;
+            
+            try {
+                const response = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success && data.logs) {
+                    let html = '';
+                    data.logs.forEach(log => {
+                        let statusClass = log.status === 'success' ? 'status-active' : 
+                                         log.status === 'failed' ? 'status-blocked' : 'status-pending';
+                        
+                        let details = '-';
+                        if (log.details) {
+                            try {
+                                const detailsObj = typeof log.details === 'object' ? log.details : JSON.parse(log.details);
+                                if (detailsObj.user_phone) {
+                                    details = detailsObj.user_phone;
+                                } else if (detailsObj.reason) {
+                                    details = detailsObj.reason;
+                                } else if (detailsObj.additional_hours) {
+                                    details = `+${detailsObj.additional_hours} hours`;
+                                } else {
+                                    details = Object.keys(detailsObj).map(k => `${k}: ${detailsObj[k]}`).join(', ').substring(0, 80);
+                                }
+                            } catch(e) {
+                                details = String(log.details).substring(0, 80);
+                            }
+                        }
+                        
+                        const actionDisplay = log.action.replace(/_/g, ' ');
+                        
+                        html += `<tr>
+                            <td style="white-space: nowrap;">${new Date(log.createdAt).toLocaleString()}</td>
+                            <td>${escapeHtml(log.admin_phone || 'System')}</td>
+                            <td><span style="font-weight: 500;">${escapeHtml(actionDisplay)}</span></td>
+                            <td>${escapeHtml(log.target_type || '-')} #${log.target_id || '-'}</td>
+                            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(details)}">${escapeHtml(details)}</td>
+                            <td><span class="status-badge ${statusClass}">${log.status}</span></td>
+                        </tr>`;
+                    });
+                    document.getElementById('logsTableBody').innerHTML = html;
+                    
+                    const totalPages = data.pagination.pages;
+                    let paginationHtml = '';
+                    paginationHtml += `<button onclick="loadLogs(${page-1})" class="action-btn" style="background: #00838f; color: white; padding: 5px 12px;" ${page <= 1 ? 'disabled' : ''}>Previous</button>`;
+                    paginationHtml += `<span style="margin: 0 10px;">Page ${page} of ${totalPages}</span>`;
+                    paginationHtml += `<button onclick="loadLogs(${page+1})" class="action-btn" style="background: #00838f; color: white; padding: 5px 12px;" ${page >= totalPages ? 'disabled' : ''}>Next</button>`;
+                    document.getElementById('logsPagination').innerHTML = paginationHtml;
+                } else {
+                    document.getElementById('logsTableBody').innerHTML = '<tr><td colspan="6" style="text-align: center;">No logs found</td></tr>';
+                }
+                resetSessionTimeout();
+            } catch (error) {
+                console.error('Error loading logs:', error);
+                document.getElementById('logsTableBody').innerHTML = '<tr><td colspan="6" style="text-align: center;">Error loading logs</td></tr>';
+            }
+        }
+        
+        function clearLogFilters() {
+            document.getElementById('logFilterAction').value = '';
+            document.getElementById('logFilterStatus').value = '';
+            document.getElementById('logStartDate').value = '';
+            document.getElementById('logEndDate').value = '';
+            loadLogs(1);
+        }
+
+        // ========== INITIALIZATION ==========
+        if (token) {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('dashboardPage').style.display = 'flex';
+            fetchCsrfToken().then(() => {
+                loadDashboard();
+                resetSessionTimeout();
+                
+                ['click', 'keypress', 'mousemove'].forEach(event => {
+                    document.addEventListener(event, resetSessionTimeout);
+                });
+            });
+        }
+
+        window.onclick = function(event) { 
+            const modal = document.getElementById('extendModal'); 
+            if (event.target === modal) closeExtendModal(); 
+        }
+    </script>
+</body>
+</html>

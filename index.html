@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKYLIMITLESS WiFi</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background: #ffffff;
+        color: #000000;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .container {
+        max-width: 600px;
+        width: 95%;
+        margin: 20px auto;
+        padding: 25px 15px;
+        background: #f5f5f5;
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .logo {
+        max-width: 250px;
+        height: auto;
+        display: inline-block;
+        border-radius: 10px;
+    }
+
+    .wifi-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(0, 131, 143, 0.1);
+        padding: 8px 15px;
+        border-radius: 30px;
+        border: 1px solid #00838f;
+        margin-bottom: 20px;
+    }
+
+    .wifi-name {
+        font-size: 16px;
+        color: #00838f;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .wifi-icon {
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        font-size: 20px;
+        color: #00838f;
+        display: inline-block;
+    }
+
+    .connect-btn {
+        background: linear-gradient(135deg, #00838f, #006064);
+        border: none;
+        padding: 6px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: bold;
+        color: white;
+        transition: all 0.3s;
+        box-shadow: 0 2px 8px rgba(0, 131, 143, 0.3);
+        font-size: 14px;
+    }
+
+    .connect-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 131, 143, 0.4);
+    }
+
+    .packages-section {
+        margin-bottom: 25px;
+    }
+
+    .section-title {
+        background: rgba(0, 131, 143, 0.1);
+        padding: 10px;
+        border-radius: 10px;
+        margin: 15px 0 10px;
+        font-size: 18px;
+        color: #006064;
+        border-left: 4px solid #00838f;
+        text-align: left;
+        font-weight: bold;
+    }
+
+    .packages-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .package {
+        background: #ffffff;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid #e0e0e0;
+        transition: transform 0.2s;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .package:hover {
+        transform: translateY(-2px);
+        border-color: #00838f;
+        box-shadow: 0 5px 20px rgba(0, 131, 143, 0.2);
+    }
+
+    .package-info {
+        text-align: left;
+        margin-bottom: 10px;
+    }
+
+    .package-info strong {
+        font-size: 22px;
+        color: #00838f;
+        display: block;
+    }
+
+    .package-info small {
+        display: block;
+        color: #555555;
+        font-size: 13px;
+        margin-top: 4px;
+        line-height: 1.4;
+    }
+
+    .badge {
+        background: #ff6b6b;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: bold;
+        position: absolute;
+        top: -5px;
+        right: 10px;
+        text-transform: uppercase;
+    }
+
+    .badge.popular {
+        background: #4CAF50;
+    }
+
+    .badge.value {
+        background: #FF9800;
+    }
+
+    button {
+        background: linear-gradient(135deg, #00838f, #006064);
+        border: none;
+        padding: 10px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: bold;
+        color: white;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(0, 131, 143, 0.3);
+        width: 100%;
+        font-size: 14px;
+    }
+
+    button:hover {
+        transform: scale(1.02);
+        box-shadow: 0 6px 20px rgba(0, 131, 143, 0.4);
+    }
+
+    button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .contact {
+        margin: 20px 0 15px;
+        padding: 15px;
+        background: #ffffff;
+        border-radius: 10px;
+        font-size: 14px;
+        color: #333333;
+        border: 1px solid #e0e0e0;
+    }
+
+    .contact a {
+        color: #00838f;
+        text-decoration: none;
+    }
+
+    .contact a:hover {
+        text-decoration: underline;
+    }
+
+    footer {
+        font-size: 12px;
+        color: #777777;
+        margin-top: 15px;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 20px;
+        max-width: 400px;
+        width: 90%;
+        color: #333333;
+    }
+
+    .modal h3 {
+        margin-bottom: 20px;
+        color: #00838f;
+    }
+
+    .modal input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        background: #f9f9f9;
+        color: #333333;
+        font-size: 16px;
+    }
+
+    .modal input::placeholder {
+        color: #999999;
+    }
+
+    .modal-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .modal-buttons button {
+        flex: 1;
+    }
+
+    .cancel-btn {
+        background: #9e9e9e;
+        box-shadow: none;
+    }
+    
+    .cancel-btn:hover {
+        background: #757575;
+    }
+
+    .status-badge {
+        background: #4CAF50;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        display: inline-block;
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+
+    .status-badge.warning {
+        background: #ff9800;
+    }
+
+    .status-badge.expired {
+        background: #f44336;
+    }
+
+    .status-badge.blocked {
+        background: #f44336;
+    }
+
+    .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid white;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-left: 8px;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 450px) {
+        .packages-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .logo {
+            max-width: 180px;
+        }
+        
+        .wifi-row {
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        
+        .connect-btn {
+            width: 100%;
+        }
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="logo-container">
+        <img src="image/my logo2.png" alt="SKYLIMITLESS Logo" class="logo">
+    </div>
+
+    <div class="wifi-row">
+        <div class="wifi-name">
+            <i class="fas fa-wifi wifi-icon"></i>
+            Stay connected to SKYLIMITLESS
+        </div>
+        <button class="connect-btn" onclick="openReconnectModal()">Reconnect</button>
+    </div>
+
+    <div id="activeSession" class="status-badge" style="display: none;">
+        <i class="fas fa-clock"></i> Active Session: <span id="timer">0h 0m</span> remaining
+    </div>
+
+    <div id="blockedMessage" class="status-badge blocked" style="display: none;">
+        <i class="fas fa-ban"></i> Account Blocked. Please contact support.
+    </div>
+
+    <!-- Daily Packages -->
+    <div class="packages-section">
+        <div class="section-title">📅 Daily Packages</div>
+        <div class="packages-grid">
+            <div class="package"><div class="package-info"><strong>Ksh 5</strong><small>40 Minutes Access</small></div><button onclick="showPaymentModal(5, '40 Mins', 0.67)">Buy</button></div>
+            <div class="package"><div class="package-info"><strong>Ksh 10</strong><small>2 Hours Access</small></div><button onclick="showPaymentModal(10, '2 Hours', 2)">Buy</button></div>
+            <div class="package"><div class="package-info"><strong>Ksh 20</strong><small>6 Hours Access</small></div><button onclick="showPaymentModal(20, '6 Hours', 6)">Buy</button></div>
+            <div class="package"><div class="package-info"><strong>Ksh 30</strong><small>12 Hours Access</small></div><button onclick="showPaymentModal(30, '12 Hours', 12)">Buy</button></div>
+            <div class="package"><div class="package-info"><strong>Ksh 40</strong><small>24 Hours Access</small></div><button onclick="showPaymentModal(40, '24 Hours', 24)">Buy</button></div>
+            <div class="package"><div class="package-info"><strong>Ksh 100</strong><small>3 Days Access</small></div><button onclick="showPaymentModal(100, '3 Days', 72)">Buy</button></div>
+        </div>
+    </div>
+
+    <!-- Special Offers -->
+    <div class="packages-section">
+        <div class="section-title">🎯 Special Offers</div>
+        <div class="packages-grid">
+            <div class="package"><span class="badge">HOT</span><div class="package-info"><strong>Ksh 10</strong><small>2GB Data • 3 Hours</small></div><button onclick="showPaymentModal(10, '2GB - 3 Hours', 3)">Buy</button></div>
+            <div class="package"><span class="badge value">BEST VALUE</span><div class="package-info"><strong>Ksh 15</strong><small>3GB Data • 4 Hours</small></div><button onclick="showPaymentModal(15, '3GB - 4 Hours', 4)">Buy</button></div>
+        </div>
+    </div>
+
+    <!-- Weekly Packages -->
+    <div class="packages-section">
+        <div class="section-title">📆 Weekly Packages</div>
+        <div class="packages-grid">
+            <div class="package"><div class="package-info"><strong>Ksh 160</strong><small>7 Days Unlimited</small></div><button onclick="showPaymentModal(160, '7 Days Unlimited', 168)">Buy</button></div>
+            <div class="package"><div class="package-info"><strong>Ksh 30</strong><small>2GB Data • 7 Days</small></div><button onclick="showPaymentModal(30, '2GB - 7 Days', 168)">Buy</button></div>
+        </div>
+    </div>
+
+    <!-- Monthly Packages -->
+    <div class="packages-section">
+        <div class="section-title">📊 Monthly Packages</div>
+        <div class="packages-grid">
+            <div class="package"><div class="package-info"><strong>Ksh 400</strong><small>30GB Data • 30 Days</small></div><button onclick="showPaymentModal(400, '30GB - 30 Days', 720)">Buy</button></div>
+            <div class="package"><span class="badge popular">POPULAR</span><div class="package-info"><strong>Ksh 499</strong><small>1 Month Unlimited</small></div><button onclick="showPaymentModal(499, '1 Month Unlimited', 720)">Buy</button></div>
+        </div>
+    </div>
+
+    <div class="contact">
+        📞 Need Help?<br>
+        <a href="tel:0797248425">Call / WhatsApp: 0797248425</a><br>
+        <a href="mailto:support@skylimitless.co.ke">support@skylimitless.co.ke</a>
+    </div>
+
+    <footer>
+        © 2026 SKYLIMITLESS WiFi. All Rights Reserved.
+    </footer>
+</div>
+
+<!-- M-Pesa Payment Modal -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <h3>M-Pesa Payment</h3>
+        <p>Package: <span id="selectedPackage"></span></p>
+        <p>Amount: Ksh <span id="selectedAmount"></span></p>
+        <input type="tel" id="phoneNumber" placeholder="Enter M-Pesa number" value="07">
+        <div class="modal-buttons">
+            <button id="payNowBtn" onclick="processPayment()">Pay Now</button>
+            <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+        </div>
+        <p style="font-size: 12px; margin-top: 10px; color: #666666;">
+            You'll receive an STK push on your phone
+        </p>
+    </div>
+</div>
+
+<!-- Reconnect Modal -->
+<div id="reconnectModal" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-wifi"></i> Reconnect to SKYLIMITLESS</h3>
+        <p>Enter your payment details to reconnect</p>
+        <input type="tel" id="reconnectPhone" placeholder="Phone number (e.g., 0712345678)">
+        <input type="text" id="reconnectReceipt" placeholder="M-Pesa Receipt Code (e.g., UD4ACBLL0H)">
+        <div class="modal-buttons">
+            <button id="reconnectBtn" onclick="reconnectToWiFi()">Reconnect</button>
+            <button class="cancel-btn" onclick="closeReconnectModal()">Cancel</button>
+        </div>
+        <p id="reconnectError" style="font-size: 12px; margin-top: 10px; color: #f44336; display: none;"></p>
+    </div>
+</div>
+
+<script>
+    // ========== FIXED: Use localhost only ==========
+    const API_BASE = 'http://localhost:5000';
+    
+    let currentPrice = 0;
+    let currentDescription = '';
+    let currentHours = 0;
+    let timerInterval = null;
+    let currentCheckoutRequestId = null;
+    let csrfToken = null;
+
+    // ========== NEW: Fetch CSRF token ==========
+    async function fetchCsrfToken() {
+        try {
+            const response = await fetch(`${API_BASE}/api/csrf-token`, { 
+                method: 'GET', 
+                credentials: 'include' 
+            });
+            if (response.ok) {
+                const data = await response.json();
+                csrfToken = data.token;
+                console.log('✅ CSRF token obtained');
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Failed to get CSRF token:', error);
+            return false;
+        }
+    }
+
+    // ========== NEW: Secure device ID generation ==========
+    function generateSecureDeviceId() {
+        if (window.crypto && window.crypto.randomUUID) {
+            return window.crypto.randomUUID();
+        }
+        const array = new Uint8Array(16);
+        window.crypto.getRandomValues(array);
+        return 'device_' + Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+
+    // ========== NEW: HTML escape for safe display ==========
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    // ========== NEW: Safe alert (prevents XSS from server responses) ==========
+    function safeAlert(message) {
+        const escapedMessage = escapeHtml(message);
+        alert(escapedMessage);
+    }
+
+    // ========== NEW: Show data limit exceeded message ==========
+    function showDataLimitExceededMessage(dataUsedMB, dataLimitMB) {
+        const dataUsedGB = (dataUsedMB / 1024).toFixed(2);
+        const dataLimitGB = (dataLimitMB / 1024).toFixed(2);
+        
+        alert(`❌ DATA LIMIT EXCEEDED\n\n` +
+              `Your data limit has been exhausted.\n\n` +
+              `Data Used: ${dataUsedGB} GB (${dataUsedMB} MB)\n` +
+              `Data Limit: ${dataLimitGB} GB (${dataLimitMB} MB)\n\n` +
+              `Please purchase a new package to continue browsing.`);
+    }
+
+    function showPaymentModal(price, description, hours) {
+        currentPrice = price;
+        currentDescription = description;
+        currentHours = hours;
+        document.getElementById('selectedPackage').textContent = description;
+        document.getElementById('selectedAmount').textContent = price;
+        document.getElementById('paymentModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('paymentModal').style.display = 'none';
+    }
+
+    async function isUserBlocked(phone) {
+        try {
+            let cleanPhone = phone.replace(/\D/g, '');
+            if (cleanPhone.startsWith('254')) {
+                cleanPhone = '0' + cleanPhone.slice(3);
+            }
+            
+            const response = await fetch(`${API_BASE}/api/admin/user-status?phone=${cleanPhone}`);
+            const data = await response.json();
+            
+            if (data.success && data.blocked === true) {
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Error checking user blocked status:', error);
+            return false;
+        }
+    }
+
+    async function processPayment() {
+        const phone = document.getElementById('phoneNumber').value;
+        
+        let cleanPhone = phone.replace(/\D/g, '');
+        let isValid = false;
+
+        if (cleanPhone.match(/^(07|01)\d{8}$/)) {
+            isValid = true;
+        } else if (cleanPhone.match(/^254\d{9}$/)) {
+            isValid = true;
+        }
+
+        if (!isValid) {
+            alert('Please enter a valid Kenyan phone number (e.g., 0712345678 or 254712345678)');
+            return;
+        }
+
+        const blocked = await isUserBlocked(phone);
+        if (blocked) {
+            alert('Your account has been blocked. Please contact support.');
+            return;
+        }
+
+        localStorage.setItem('lastPhone', phone);
+
+        const payBtn = document.getElementById('payNowBtn');
+        payBtn.disabled = true;
+        payBtn.innerHTML = 'Processing... <span class="spinner"></span>';
+
+        try {
+            if (!csrfToken) {
+                await fetchCsrfToken();
+            }
+            
+            console.log('📤 Sending request to:', `${API_BASE}/api/payments/initiate`);
+            
+            const response = await fetch(`${API_BASE}/api/payments/initiate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken || ''
+                },
+                body: JSON.stringify({
+                    phone: phone,
+                    packageName: currentDescription,
+                    amount: currentPrice
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                currentCheckoutRequestId = data.checkoutRequestId;
+                safeAlert('STK Push sent to your phone. Please enter your PIN to complete payment.');
+                pollPaymentStatus(currentCheckoutRequestId, phone);
+                closeModal();
+            } else {
+                safeAlert('Payment initiation failed: ' + (data.message || 'Unknown error'));
+                payBtn.disabled = false;
+                payBtn.innerHTML = 'Pay Now';
+            }
+        } catch (error) {
+            console.error('❌ Payment error:', error);
+            alert('Error initiating payment. Please try again.');
+            payBtn.disabled = false;
+            payBtn.innerHTML = 'Pay Now';
+        }
+    }
+
+    // ========== UPDATED: pollPaymentStatus with manual query fallback ==========
+    async function pollPaymentStatus(checkoutRequestId, phone) {
+        let attempts = 0;
+        const maxAttempts = 60; // 60 seconds max
+        let isCompleted = false;
+        let manualQueryTriggered = false;
+        
+        const interval = setInterval(async () => {
+            // ✅ STOP POLLING AFTER COMPLETION
+            if (isCompleted) {
+                clearInterval(interval);
+                return;
+            }
+            
+            attempts++;
+            
+            try {
+                // First check local database status
+                const response = await fetch(`${API_BASE}/api/payments/status/${checkoutRequestId}`);
+                const data = await response.json();
+                
+                // ✅ STOP POLLING WHEN COMPLETED
+                if (data.status === 'completed') {
+                    isCompleted = true;
+                    clearInterval(interval);
+                    safeAlert('Payment successful! You now have internet access.');
+                    setTimeout(async () => {
+                        await checkSession(phone);
+                    }, 2000);
+                    return;
+                }
+                
+                if (data.status === 'failed') {
+                    isCompleted = true;
+                    clearInterval(interval);
+                    safeAlert('Payment failed. Please try again.');
+                    return;
+                }
+                
+                // ✅ ONLY TRY MANUAL QUERY ONCE, AFTER 15 SECONDS
+                if (attempts > 15 && !manualQueryTriggered && !isCompleted) {
+                    manualQueryTriggered = true;
+                    console.log('⏳ No callback yet, trying manual query (once only)...');
+                    
+                    try {
+                        const queryResponse = await fetch(`${API_BASE}/api/payments/query/${checkoutRequestId}`);
+                        const queryData = await queryResponse.json();
+                        
+                        if (queryData.status === 'completed') {
+                            isCompleted = true;
+                            clearInterval(interval);
+                            safeAlert('Payment successful! You now have internet access.');
+                            setTimeout(async () => {
+                                await checkSession(phone);
+                            }, 2000);
+                        } else if (queryData.fromCache) {
+                            console.log('✅ Transaction already completed, updating UI...');
+                            isCompleted = true;
+                            clearInterval(interval);
+                            safeAlert('Payment successful! You now have internet access.');
+                            setTimeout(async () => {
+                                await checkSession(phone);
+                            }, 2000);
+                        } else if (queryData.sessionExists) {
+                            console.log('✅ Session already exists, updating UI...');
+                            isCompleted = true;
+                            clearInterval(interval);
+                            safeAlert('Payment successful! You now have internet access.');
+                            setTimeout(async () => {
+                                await checkSession(phone);
+                            }, 2000);
+                        }
+                    } catch (queryError) {
+                        console.error('Manual query failed:', queryError);
+                    }
+                }
+                
+                // ✅ STOP AFTER MAX ATTEMPTS
+                if (attempts >= maxAttempts && !isCompleted) {
+                    clearInterval(interval);
+                    safeAlert('Payment taking too long. Please check your M-Pesa messages or contact support.');
+                }
+            } catch (error) {
+                console.error('Status check error:', error);
+            }
+        }, 1000);
+    }
+
+    async function checkSession(phone) {
+        try {
+            console.log('Checking session for phone:', phone);
+            
+            const blocked = await isUserBlocked(phone);
+            if (blocked) {
+                document.getElementById('activeSession').style.display = 'none';
+                document.getElementById('blockedMessage').style.display = 'inline-block';
+                return;
+            } else {
+                document.getElementById('blockedMessage').style.display = 'none';
+            }
+            
+            const response = await fetch(`${API_BASE}/api/sessions/active?phone=${phone}`);
+            const data = await response.json();
+            
+            if (data.active === true && data.session && data.session.endTime) {
+                document.getElementById('activeSession').style.display = 'inline-block';
+                startCountdownFromServer(data.session.endTime);
+            } else {
+                document.getElementById('activeSession').style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Session check error:', error);
+        }
+    }
+
+    function startCountdownFromServer(endTime) {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+        }
+        
+        let endDate;
+        if (typeof endTime === 'string') {
+            endDate = new Date(endTime);
+            if (isNaN(endDate.getTime())) {
+                endDate = new Date(endTime.replace(' ', 'T'));
+            }
+        } else if (endTime instanceof Date) {
+            endDate = endTime;
+        } else {
+            console.error('Invalid endTime format:', endTime);
+            return;
+        }
+        
+        if (isNaN(endDate.getTime())) {
+            console.error('Could not parse endTime:', endTime);
+            return;
+        }
+        
+        function updateTimer() {
+            const now = new Date();
+            const timeRemaining = endDate.getTime() - now.getTime();
+            
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('activeSession').style.display = 'none';
+                document.getElementById('timer').textContent = '0h 0m';
+                return;
+            }
+            
+            const totalMinutes = Math.floor(timeRemaining / (1000 * 60));
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            
+            document.getElementById('timer').textContent = `${hours}h ${minutes}m`;
+            document.getElementById('activeSession').style.display = 'inline-block';
+            
+            if (totalMinutes < 10) {
+                document.getElementById('activeSession').classList.add('warning');
+            } else {
+                document.getElementById('activeSession').classList.remove('warning');
+            }
+        }
+        
+        updateTimer();
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function openReconnectModal() {
+        document.getElementById('reconnectModal').style.display = 'flex';
+        document.getElementById('reconnectError').style.display = 'none';
+        document.getElementById('reconnectPhone').value = '';
+        document.getElementById('reconnectReceipt').value = '';
+    }
+
+    function closeReconnectModal() {
+        document.getElementById('reconnectModal').style.display = 'none';
+    }
+
+    // ========== UPDATED: Reconnect with data limit handling ==========
+    async function reconnectToWiFi() {
+        const phone = document.getElementById('reconnectPhone').value;
+        const receiptCode = document.getElementById('reconnectReceipt').value;
+        const errorDiv = document.getElementById('reconnectError');
+        
+        let cleanPhone = phone.replace(/\D/g, '');
+        let isValid = false;
+        
+        if (cleanPhone.match(/^(07|01)\d{8}$/)) {
+            isValid = true;
+        } else if (cleanPhone.match(/^254\d{9}$/)) {
+            isValid = true;
+        }
+        
+        if (!isValid) {
+            errorDiv.textContent = 'Please enter a valid Kenyan phone number';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        
+        if (!receiptCode || receiptCode.length < 5) {
+            errorDiv.textContent = 'Please enter a valid M-Pesa receipt code';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        
+        const blocked = await isUserBlocked(phone);
+        if (blocked) {
+            errorDiv.textContent = 'Your account has been blocked. Please contact support.';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        
+        let deviceId = localStorage.getItem('deviceId');
+        if (!deviceId) {
+            deviceId = generateSecureDeviceId();
+            localStorage.setItem('deviceId', deviceId);
+        }
+        
+        if (!csrfToken) {
+            await fetchCsrfToken();
+        }
+        
+        const reconnectBtn = document.getElementById('reconnectBtn');
+        reconnectBtn.disabled = true;
+        reconnectBtn.innerHTML = 'Connecting... <span class="spinner"></span>';
+        errorDiv.style.display = 'none';
+        
+        try {
+            const response = await fetch(`${API_BASE}/api/sessions/reconnect`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken || ''
+                },
+                body: JSON.stringify({ 
+                    phone: phone, 
+                    receiptCode: receiptCode,
+                    deviceId: deviceId
+                })
+            });
+            
+            const data = await response.json();
+            
+            // ✅ UPDATED: Handle data limit exceeded specifically
+            if (data.success) {
+                safeAlert(data.message);
+                localStorage.setItem('lastPhone', phone);
+                localStorage.setItem('lastReceipt', receiptCode);
+                closeReconnectModal();
+                await checkSession(phone);
+            } else if (data.reason === 'DATA_LIMIT_EXCEEDED') {
+                // Show detailed data limit message
+                showDataLimitExceededMessage(data.data_used_mb, data.data_limit_mb);
+                errorDiv.textContent = data.message;
+                errorDiv.style.display = 'block';
+            } else {
+                errorDiv.textContent = data.message;
+                errorDiv.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Reconnect error:', error);
+            errorDiv.textContent = 'Connection error. Please try again.';
+            errorDiv.style.display = 'block';
+        } finally {
+            reconnectBtn.disabled = false;
+            reconnectBtn.innerHTML = 'Reconnect';
+        }
+    }
+
+    // Initialize on page load
+    window.onload = async function() {
+        console.log('Page loaded, initializing...');
+        
+        await fetchCsrfToken();
+        
+        if (!localStorage.getItem('deviceId')) {
+            const deviceId = generateSecureDeviceId();
+            localStorage.setItem('deviceId', deviceId);
+        }
+        
+        const lastPhone = localStorage.getItem('lastPhone');
+        if (lastPhone) {
+            await checkSession(lastPhone);
+        }
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('paymentModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+        const reconnectModal = document.getElementById('reconnectModal');
+        if (event.target === reconnectModal) {
+            closeReconnectModal();
+        }
+    }
+</script>
+</body>
+</html>
