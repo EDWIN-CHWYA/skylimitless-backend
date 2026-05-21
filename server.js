@@ -20,6 +20,9 @@ const logRoutes = require('./src/routes/logRoutes');
 // Initialize express
 const app = express();
 
+// Trust proxy to get real IP (important for Render)
+app.set('trust proxy', true);
+
 // ========== SECURITY MIDDLEWARE ==========
 
 // 1. Helmet - Security headers (updated to allow inline event handlers)
