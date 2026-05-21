@@ -446,8 +446,10 @@
 </div>
 
 <script>
-    // ========== FIXED: Use localhost only ==========
-    const API_BASE = 'http://localhost:5000';
+    // ========== FIXED: Dynamic API_BASE ==========
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000'
+    : 'https://skylimitless-backend.onrender.com';
     
     let currentPrice = 0;
     let currentDescription = '';
