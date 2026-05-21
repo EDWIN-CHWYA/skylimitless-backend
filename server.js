@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const sequelize = require('./src/config/database');
 const { generalLimiter, authLimiter } = require('./src/middleware/security');
 const crypto = require('crypto');
+const path = require('path');  // ← ADDED FOR STATIC FILES
 
 // Load env vars
 dotenv.config();
@@ -14,7 +15,7 @@ dotenv.config();
 const paymentRoutes = require('./src/routes/paymentRoutes');
 const sessionRoutes = require('./src/routes/sessionRoutes');
 const adminRoutes = require('./src/routes/adminRoutes');
-const logRoutes = require('./src/routes/logRoutes');  // ← ADDED FOR SYSTEM LOGS
+const logRoutes = require('./src/routes/logRoutes');
 
 // Initialize express
 const app = express();
@@ -62,11 +63,8 @@ setInterval(() => {
 // Generate CSRF token endpoint
 app.get('/api/csrf-token', (req, res) => {
   try {
-    // Generate a random token
     const token = crypto.randomBytes(32).toString('hex');
-    // Store with 1 hour expiry
     csrfTokens.set(token, Date.now() + 60 * 60 * 1000);
-    // Send token to client
     res.json({ token });
   } catch (error) {
     console.error('CSRF token generation error:', error);
@@ -76,21 +74,17 @@ app.get('/api/csrf-token', (req, res) => {
 
 // CSRF validation middleware
 const validateCsrfToken = (req, res, next) => {
-  // Skip for GET, HEAD, OPTIONS
   if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
     return next();
   }
   
-  // Get token from header
   const token = req.headers['x-csrf-token'];
   
   if (!token) {
     return res.status(403).json({ success: false, message: 'CSRF token missing' });
   }
   
-  // Check if token exists and is not expired
   if (csrfTokens.has(token)) {
-    // Token is valid, remove it (one-time use)
     csrfTokens.delete(token);
     return next();
   }
@@ -98,19 +92,16 @@ const validateCsrfToken = (req, res, next) => {
   res.status(403).json({ success: false, message: 'Invalid or expired CSRF token' });
 };
 
-// Make CSRF validation available to routes
 app.use((req, res, next) => {
   req.validateCsrf = validateCsrfToken;
   next();
 });
-// ========== END CSRF PROTECTION ==========
 
 // Body parser
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // ========== FIXED: CORS Configuration ==========
-// Allowed origins based on environment
 const allowedOrigins = process.env.NODE_ENV === 'production' 
   ? [
       process.env.FRONTEND_URL || 'https://yourdomain.com',
@@ -121,7 +112,6 @@ const allowedOrigins = process.env.NODE_ENV === 'production'
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, server-to-server)
     if (!origin) {
       return callback(null, true);
     }
@@ -138,15 +128,12 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token']
 }));
 
-// ========== NEW: HTTPS ENFORCEMENT (Production) ==========
+// ========== HTTPS ENFORCEMENT (Production) ==========
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {
-    // Check if the request came from HTTP (not HTTPS)
-    // This works behind reverse proxies like Nginx, Apache, Heroku, etc.
     const isHttps = req.headers['x-forwarded-proto'] === 'https' || req.secure;
     
     if (!isHttps) {
-      // Redirect HTTP to HTTPS
       const httpsUrl = `https://${req.headers.host}${req.url}`;
       console.log(`🔒 Redirecting HTTP to HTTPS: ${httpsUrl}`);
       return res.redirect(301, httpsUrl);
@@ -159,12 +146,11 @@ if (process.env.NODE_ENV === 'production') {
 // Apply stricter rate limiting to auth routes
 app.use('/api/admin/login', authLimiter);
 
-// Serve static files from your frontend folder
-app.use(express.static('C:\\skylimitless wifi'));
+// ========== FIXED: Serve static files (works on both Windows and Linux) ==========
+app.use(express.static(path.join(__dirname)));
 
-// Request logging middleware (redact sensitive data)
+// Request logging middleware
 app.use((req, res, next) => {
-  // Don't log full callback bodies in production
   if (req.path === '/api/payments/callback' && process.env.NODE_ENV === 'production') {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.path} - Callback received`);
   } else {
@@ -187,7 +173,7 @@ if (process.env.NODE_ENV !== 'production') {
 app.use('/api/payments', paymentRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/admin/logs', logRoutes);  // ← ADDED FOR SYSTEM LOGS
+app.use('/api/admin/logs', logRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -218,7 +204,6 @@ app.get('/', (req, res) => {
 app.use((err, req, res, next) => {
   console.error('Error:', err.stack);
   
-  // CORS error
   if (err.message === 'CORS policy violation') {
     return res.status(403).json({
       success: false,
@@ -226,7 +211,6 @@ app.use((err, req, res, next) => {
     });
   }
   
-  // Sequelize validation errors
   if (err.name === 'SequelizeValidationError') {
     return res.status(400).json({
       success: false,
@@ -235,7 +219,6 @@ app.use((err, req, res, next) => {
     });
   }
 
-  // JWT errors
   if (err.name === 'JsonWebTokenError') {
     return res.status(401).json({
       success: false,
@@ -250,7 +233,6 @@ app.use((err, req, res, next) => {
     });
   }
 
-  // Default error
   res.status(err.status || 500).json({
     success: false,
     message: err.message || 'Internal Server Error',
@@ -271,20 +253,17 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
-    // Test database connection
     await sequelize.authenticate();
     console.log('✅ Database connected successfully');
     
-    // Sync database models (creates tables if they don't exist)
     await sequelize.sync();
     console.log('✅ Database synced');
 
-    // Create default admin if none exists
     const User = require('./src/models/User');
     const Transaction = require('./src/models/Transaction');
     const Session = require('./src/models/Session');
     const LoginAttempt = require('./src/models/LoginAttempt');
-    const SystemLog = require('./src/models/SystemLog');  // ← ADDED FOR SYSTEM LOGS
+    const SystemLog = require('./src/models/SystemLog');
     
     const adminExists = await User.findOne({ where: { is_admin: true } });
     
@@ -298,7 +277,6 @@ const startServer = async () => {
       console.log('✅ Default admin created');
     }
 
-    // Start listening
     const server = app.listen(PORT, () => {
       console.log(`✅ Server running on port ${PORT}`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
@@ -307,7 +285,6 @@ const startServer = async () => {
       console.log(`📋 Logs endpoint: /api/admin/logs (admin only)`);
     });
     
-    // Store server for graceful shutdown
     process.server = server;
     
   } catch (error) {
@@ -318,16 +295,13 @@ const startServer = async () => {
 
 startServer();
 
-// Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
   console.error('❌ Unhandled Rejection:', err);
-  // Don't exit immediately in development
   if (process.env.NODE_ENV === 'production') {
     process.exit(1);
   }
 });
 
-// Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
   console.error('❌ Uncaught Exception:', err);
   if (process.env.NODE_ENV === 'production') {
@@ -335,7 +309,6 @@ process.on('uncaughtException', (err) => {
   }
 });
 
-// Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('👋 SIGTERM received, shutting down gracefully');
   if (process.server) {
