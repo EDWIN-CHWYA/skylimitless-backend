@@ -104,9 +104,10 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // ========== FIXED: CORS Configuration ==========
 const allowedOrigins = process.env.NODE_ENV === 'production' 
   ? [
-      process.env.FRONTEND_URL || 'https://yourdomain.com',
-      'https://yourdomain.com',
-      'https://admin.yourdomain.com'
+      process.env.FRONTEND_URL || 'https://skylimitless-backend.onrender.com',
+      'https://skylimitless-backend.onrender.com',
+      'http://localhost:5000',
+      'http://localhost:3000'
     ]
   : ['http://localhost:3000', 'http://localhost:5000', 'http://127.0.0.1:3000', 'http://127.0.0.1:5000'];
 
